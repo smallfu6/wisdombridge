@@ -1,0 +1,103 @@
+/* ChatBot.css */
+
+/* 基本布局 */
+.chat-container {
+    display: flex;
+    flex-direction: column;
+    height: 80vh;
+    max-width: 600px;
+    margin: 0 auto;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #f9f9f9;
+    margin-top: 40px;
+
+  }
+  
+  .chat-header {
+    background: #4a90e2;
+    color: #fff;
+    padding: 15px;
+    text-align: center;
+    font-size: 1.5em;
+  }
+  
+  .chat-body {
+    flex: 1;
+    padding: 15px;
+    overflow-y: auto;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .message-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  
+  .message {
+    display: inline-block; /* 使消息框的宽度自适应内容 */
+    padding: 10px;
+    border-radius: 10px;
+    line-height: 1.5;
+    max-width: 80%; /* 设置最大宽度 */
+  }
+  
+  .user-message {
+    background: #d1e7dd;
+    align-self: flex-end; /* 消息对齐到右侧 */
+    text-align: right;
+    border-radius: 15px 15px 0 15px; /* 圆角 */
+    margin-left: auto; /* 将用户消息推到右侧 */
+    margin: 20px;
+  }
+  
+  .bot-message {
+    background: #e2e3e5;
+    align-self: flex-start; /* 消息对齐到左侧 */
+    text-align: left;
+    border-radius: 15px 15px 15px 0; /* 圆角 */
+    margin-right: auto; /* 将 AI 消息推到左侧 */
+  }
+  
+  .typing-indicator {
+    font-style: italic;
+    color: #6c757d;
+    margin-top: 10px;
+  }
+  
+  .chat-footer {
+    display: flex;
+    border-top: 1px solid #ddd;
+    padding: 10px;
+    background: #fff;
+  }
+  
+  .chat-footer input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 20px;
+    outline: none;
+    font-size: 1em;
+    margin-right: 10px;
+  }
+  
+  .chat-footer button {
+    padding: 10px 20px;
+    background: #4a90e2;
+    border: none;
+    border-radius: 20px;
+    color: #fff;
+    font-size: 1em;
+    cursor: pointer;
+  }
+  
+  .chat-footer button:hover {
+    background: #357abd;
+  }
+  
