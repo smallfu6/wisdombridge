@@ -1,99 +1,56 @@
-/* 布局设置 */
+
 .app-container {
     display: flex;
-    height: 80vh;
-    max-width: 1000px;
-    margin: 0 auto;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    overflow: hidden;
-    background: #f9f9f9;
-    margin-top: 40px;
+    height: 100vh; /* 使容器充满整个视口高度 */
+    width: 100vw; /* 使容器充满整个视口宽度 */
+    background-color: #f8f9fa; /* 背景色 */
   }
   
-  /* 左侧选项面板 */
   .options-panel {
-    width: 200px;
-    background-color: #e9ecef;
-    padding: 15px;
-    border-right: 1px solid #ddd;
+    width: 20%; /* 左侧选项占20% */
+    background: #ffffff; /* 背景色 */
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    border-right: 1px solid #ddd; /* 添加右边框 */
   }
   
-  .options-panel ul {
-    list-style-type: none;
-    padding: 0;
-  }
-  
-  .options-panel li {
-    margin: 10px 0;
-    cursor: pointer;
-  }
-  
-  .options-panel li:hover {
-    background-color: #dee2e6;
-    padding: 5px;
-    border-radius: 5px;
-  }
-  
-  /* 右侧聊天框 */
   .chat-container {
-    flex: 1;
+    width: 55%; /* 右侧聊天框占55% */
     display: flex;
     flex-direction: column;
+    background: #ffffff; /* 背景色 */
+    padding: 20px;
+    border-right: 1px solid #ddd; /* 添加右边框 */
+  }
+  
+  .info-container {
+    width: 25%; /* 信息容器占25% */
+    display: flex;
+    flex-direction: column;
+    background: #ffffff; /* 背景色 */
+    padding: 20px;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
   }
   
   .chat-body {
     flex: 1;
     padding: 15px;
     overflow-y: auto;
-    background: #fff;
-    display: flex;
-    flex-direction: column;
+    border-radius: 5px; /* 圆角 */
+    background: #f1f1f1; /* 聊天内容背景色 */
   }
   
-  .message-container {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    margin-bottom: 10px;
-  }
-  
-  .message {
-    display: inline-block;
-    padding: 10px;
-    border-radius: 10px;
-    line-height: 1.5;
-    max-width: 80%;
-  }
-  
-  .user-message {
-    background: #d1e7dd;
-    align-self: flex-end;
-    text-align: right;
-    border-radius: 15px 15px 0 15px;
-    margin-left: auto;
-    margin: 20px;
-  }
-  
-  .bot-message {
-    background: #e2e3e5;
-    align-self: flex-start;
-    text-align: left;
-    border-radius: 15px 15px 15px 0;
-    margin-right: auto;
-  }
-  
+
   .typing-indicator {
     font-style: italic;
-    color: #6c757d;
-    margin-top: 10px;
+    color: #999;
   }
   
   .chat-footer {
     display: flex;
     border-top: 1px solid #ddd;
     padding: 10px;
-    background: #fff;
+    background: #ffffff; /* 背景色 */
   }
   
   .chat-footer input {
@@ -104,6 +61,7 @@
     outline: none;
     font-size: 1em;
     margin-right: 10px;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* 内阴影 */
   }
   
   .chat-footer button {
@@ -114,31 +72,65 @@
     color: #fff;
     font-size: 1em;
     cursor: pointer;
+    transition: background 0.3s; /* 添加过渡效果 */
   }
   
   .chat-footer button:hover {
     background: #357abd;
+  }
+
+  .message {
+    display: flex;
+    align-items: flex-start; /* 头像在消息上方对齐 */
   }
   
 
-  .chat-footer button i {
-    font-size: 1.5em;
-    color: #fff;
+  
+  .typing-indicator {
+    margin-top: 10px; /* 输入指示器顶部间距 */
+    font-style: italic; /* 斜体风格 */
   }
   
-  .chat-footer button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 50px;
-    height: 50px;
-    background: #4a90e2;
-    border: none;
-    border-radius: 50%;
-    cursor: pointer;
+
+  .user-message {
+    justify-content: flex-end; /* 用户消息靠右 */
   }
   
-  .chat-footer button:hover {
-    background: #357abd;
+  .user-content {
+    background-color: #007bff; /* 用户消息背景色 */
+    color: white; /* 用户消息文字颜色 */
+    padding: 10px; /* 消息内边距 */
+    border-radius: 15px; /* 消息边框圆角 */
+    max-width: 70%; /* 消息最大宽度 */
+    margin-left: auto; /* 将用户消息推到右侧 */
+    border-bottom-right-radius: 0; /* 右下角直角 */
   }
   
+  .bot-message {
+    justify-content: flex-start; /* AI消息靠左 */
+  }
+  
+  .bot-content {
+    background-color: #baeca3; /* AI消息背景色 */
+    color: black; /* AI消息文字颜色 */
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 15px; /* 消息边框圆角 */
+    max-width: 70%; /* 消息最大宽度 */
+    border-top-left-radius: 0; /* 左上角圆角 */
+    margin-left: 10px;
+  }
+  
+  .bot-avatar {
+    width: 40px; /* 设置头像宽度 */
+    height: 40px; /* 设置头像高度 */
+    border-radius: 50%; /* 圆形头像 */
+    margin-left: 10px; /* 头像和消息内容之间的间距 */
+  }
+  
+  .user-avatar {
+    width: 40px; /* 设置头像宽度 */
+    height: 40px; /* 设置头像高度 */
+    border-radius: 50%; /* 圆形头像 */
+    margin-left: 10px; /* 头像和消息内容之间的间距 */
+  }

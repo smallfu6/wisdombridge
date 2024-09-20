@@ -10,26 +10,26 @@ const ChatBot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const wsRef = useRef(null); // WebSocket 引用
   const chatBodyRef = useRef(null); // 用于滚动到最新消息
+  const [hasReceivedMessage, setHasReceivedMessage] = useState(false);
 
-  // 处理流式数据的回调函数
   const parseStreamChunk = useCallback((data) => {
     try {
       if (data === "DONE") {
         setIsTyping(false);
+        setHasReceivedMessage(false);
       } else {
-        const message = JSON.parse(data); // 解析流式数据
+        const message = JSON.parse(data);
         const content = message.content;
 
-        // 如果上次的回复还未结束，拼接最后一条 AI 消息
         setMessages((prevMessages) => {
           const lastMessage = prevMessages[prevMessages.length - 1];
           if (lastMessage && lastMessage.role === "assistant") {
-            // 更新最后一条 AI 消息
             return [
               ...prevMessages.slice(0, prevMessages.length - 1),
               { ...lastMessage, content: lastMessage.content + content },
             ];
           } else {
+            setHasReceivedMessage(true); // 收到消息时设置为 true
             return [...prevMessages, { role: "assistant", content: content }];
           }
         });
@@ -40,7 +40,6 @@ const ChatBot = () => {
   }, []);
 
   useEffect(() => {
-    // 创建 WebSocket 连接
     wsRef.current = new WebSocket("ws://127.0.0.1:8080/chat");
 
     wsRef.current.onopen = () => {
@@ -49,7 +48,7 @@ const ChatBot = () => {
 
     wsRef.current.onmessage = (event) => {
       const data = event.data;
-      parseStreamChunk(data); // 处理流数据
+      parseStreamChunk(data);
     };
 
     wsRef.current.onclose = () => {
@@ -65,26 +64,24 @@ const ChatBot = () => {
     };
   }, [parseStreamChunk]);
 
-  // 停止接收AI消息的功能
   const handleStopAI = () => {
     if (wsRef.current) {
       wsRef.current.close();
-      setIsTyping(false); // 停止后关闭 typing 状态
+      setIsTyping(false);
       console.log("Stopped receiving AI messages.");
     }
   };
 
   const handleSendMessage = () => {
     if (input.trim()) {
-      // 发送用户消息
       setMessages((prevMessages) => [
         ...prevMessages,
         { role: "user", content: input },
       ]);
       setInput("");
-      setIsTyping(true); // 显示“AI is typing”
+      setIsTyping(true);
+      setHasReceivedMessage(false);
 
-      // 发送消息到 WebSocket 服务器
       wsRef.current.send(JSON.stringify({ role: "user", content: input }));
     }
   };
@@ -96,11 +93,12 @@ const ChatBot = () => {
   };
 
   useEffect(() => {
-    // 滚动到聊天底部
-    chatBodyRef.current?.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: "smooth" });
+    chatBodyRef.current?.scrollTo({
+      top: chatBodyRef.current.scrollHeight,
+      behavior: "smooth",
+    });
   }, [messages]);
 
-  // 使用 components 属性来渲染代码块
   const components = {
     code({ node, inline, className, children, ...props }) {
       const match = /language-(\w+)/.exec(className || "");
@@ -121,39 +119,80 @@ const ChatBot = () => {
     },
   };
 
+  const userAvatar = "/chat/user.png"; // 用户头像路径
+  const botAvatar = "/chat/user.png"; // AI头像路径（请根据实际路径修改）
+
   return (
-    <div className="chat-container">
-      <div className="chat-body" ref={chatBodyRef}>
-        {messages.map((msg, index) => (
-          <div
-            key={index}
-            className={`message ${
-              msg.role === "user" ? "user-message" : "bot-message"
-            }`}
-          >
-            {msg.role === "assistant" ? (
-              <ReactMarkdown components={components}>{msg.content}</ReactMarkdown> // 使用 components 来渲染 AI 消息
-            ) : (
-              msg.content // 用户消息直接显示
-            )}
-          </div>
-        ))}
-
-        {isTyping && <div className="typing-indicator">AI is typing...</div>}
+    <div className="app-container">
+      <div className="options-panel">
+        <h2>选项</h2>
+        <ul>
+          <li>选项 1</li>
+          <li>选项 2</li>
+          <li>选项 3</li>
+        </ul>
       </div>
+      <div className="chat-container">
+        <div className="chat-body" ref={chatBodyRef}>
+          {messages.map((msg, index) => (
+            <div
+              key={index}
+              className={`message ${
+                msg.role === "user" ? "user-message" : "bot-message"
+              }`}
+              style={{
+                display: "flex",
+                alignItems: "flex-start", // 头像与消息内容对齐
+                marginBottom: "10px", // 消息间距
+              }}
+            >
+              {msg.role === "assistant" && (
+                <img src={botAvatar} alt="Avatar" className="bot-avatar" />
+              )}
+              <div
+                className={`message-content ${
+                  msg.role === "user" ? "user-content" : "bot-content"
+                }`}
+              >
+                {msg.role === "assistant" ? (
+                  <ReactMarkdown components={components}>
+                    {msg.content}
+                  </ReactMarkdown>
+                ) : (
+                  msg.content
+                )}
+              </div>
+              {msg.role === "user" && (
+                <img src={userAvatar} alt="Avatar" className="user-avatar" />
+              )}
+            </div>
+          ))}
+          {isTyping && (
+            <div className="typing-indicator">
+              {!hasReceivedMessage && (
+                <img src={botAvatar} alt="AI Avatar" className="bot-avatar" />
+              )}
+              AI is typing...
+            </div>
+          )}
+        </div>
 
-      <div className="chat-footer">
-        <input
-          type="text"
-          placeholder="Type your message..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          disabled={isTyping} // 禁用输入框当 AI 在回复时
-        />
-        <button onClick={isTyping ? handleStopAI : handleSendMessage}>
-          <i className={`fas ${isTyping ? "fa-stop" : "fa-paper-plane"}`}></i> {/* 图标切换 */}
-        </button>
+        <div className="chat-footer">
+          <input
+            type="text"
+            placeholder="Type your message..."
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            disabled={isTyping}
+          />
+          <button onClick={isTyping ? handleStopAI : handleSendMessage}>
+            <i className={`fas ${isTyping ? "fa-stop" : "fa-paper-plane"}`}></i>
+          </button>
+        </div>
+      </div>
+      <div className="info-container">
+        <p>info</p>
       </div>
     </div>
   );
