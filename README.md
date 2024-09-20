@@ -1,70 +1,79 @@
-# Getting Started with Create React App
+# GaiaChat
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+GaiaChat is a decentralized AI chatbot application built on the Gaianet distributed AI nodes. It provides users with a secure and interactive chat experience, leveraging advanced AI capabilities while ensuring privacy and data integrity.
 
-## Available Scripts
+### Features
 
-In the project directory, you can run:
+**Decentralization**: Built on Gaianet, ensuring that user interactions are distributed across multiple nodes, reducing the risk of data breaches.
 
-### `npm start`
+**AI-Powered**: Utilizes advanced AI algorithms to provide intelligent responses and enhance user interaction.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+**Privacy-Focused**: User data and conversations are encrypted and not stored centrally, safeguarding privacy.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+**Real-Time Communication**: Offers seamless and efficient real-time chat capabilities.
 
-### `npm test`
+**User-Friendly Interface**: A clean and intuitive interface for easy navigation and interaction.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### Project Structure
 
-### `npm run build`
+GaiaChat consists of two main components:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+**Frontend**: Built with React, providing the user interface for interacting with the chatbot.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Backend**: Developed using Golang, handling AI processing and communication with Gaianet.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### Installation
 
-### `npm run eject`
+#### Prerequisites
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- Node.js
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- npm
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+- Go
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+#### Steps
 
-## Learn More
+1. Clone the repository:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+git clone https://github.com/smallfu6/gaiachat.git
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+2. Navigate to the project directory:
 
-### Code Splitting
+```bash
+cd gaiachat
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+3. Install frontend dependencies:
 
-### Analyzing the Bundle Size
+```bash
+npm install
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+4. Install backend dependencies:
 
-### Making a Progressive Web App
+```bash
+cd gochat
+go mod tidy
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+5. Start the backend server:
 
-### Advanced Configuration
+```bash
+go run main.go
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+6. Start the frontend application in a new terminal;
 
-### Deployment
+```bash
+cd gaiachat
+npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+Open your browser and navigate to http://localhost:3000 to chat with GaiaChat.
 
-### `npm run build` fails to minify
+### Contributing
+We welcome contributions! Please read the Contributing Guidelines for more information.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
