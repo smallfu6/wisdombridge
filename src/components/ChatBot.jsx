@@ -1,8 +1,15 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
+import { Button } from "antd"; 
+import { DeleteOutlined, ArrowDownOutlined } from "@ant-design/icons";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism"; // 使用 oneDark 主题样式
 import "../styles/ChatBot.css"; // 导入 CSS 文件
+
+
+const userAvatar = "/chat/user.png"; // 用户头像路径
+const botAvatar = "/chat/bot.png"; // AI头像路径
+
 
 const ChatBot = () => {
   const [messages, setMessages] = useState([]); // 存储所有消息
@@ -99,6 +106,27 @@ const ChatBot = () => {
     });
   }, [messages]);
 
+  const handleClearMessages = () => {
+    if (wsRef.current) {
+      wsRef.current.close(); // 停止接收消息
+      setIsTyping(false); // 停止输入指示
+    }
+    setMessages([]); // 清空消息记录
+    setInput(""); // 清空输入框
+    console.log("清空记录并停止接收消息.");
+
+    // 刷新页面
+    // TODO: send STOP message
+    window.location.reload();
+  };
+
+  const handleScrollToBottom = () => {
+    chatBodyRef.current?.scrollTo({
+      top: chatBodyRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  };
+
   const components = {
     code({ node, inline, className, children, ...props }) {
       const match = /language-(\w+)/.exec(className || "");
@@ -119,8 +147,6 @@ const ChatBot = () => {
     },
   };
 
-  const userAvatar = "/chat/user.png"; // 用户头像路径
-  const botAvatar = "/chat/user.png"; // AI头像路径（请根据实际路径修改）
 
   return (
     <div className="app-container">
@@ -193,6 +219,22 @@ const ChatBot = () => {
       </div>
       <div className="info-container">
         <p>info</p>
+      </div>
+
+      { /* 悬浮按钮 */ }
+      <div className="floating-buttons">
+        <Button
+          className="floating-button"
+          icon={<DeleteOutlined />}
+          onClick={handleClearMessages}
+          shape="circle"
+        />
+        <Button
+          className="floating-button"
+          icon={<ArrowDownOutlined />}
+          onClick={handleScrollToBottom}
+          shape="circle"
+        />
       </div>
     </div>
   );

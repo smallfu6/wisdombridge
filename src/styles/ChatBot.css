@@ -7,7 +7,7 @@
   }
   
   .options-panel {
-    width: 20%; /* 左侧选项占20% */
+    width: 10%; /* 左侧选项占20% */
     background: #ffffff; /* 背景色 */
     padding: 20px;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
@@ -15,16 +15,16 @@
   }
   
   .chat-container {
-    width: 55%; /* 右侧聊天框占55% */
+    width: 70%; /* 右侧聊天框占55% */
     display: flex;
     flex-direction: column;
     background: #ffffff; /* 背景色 */
-    padding: 20px;
+    padding: 10px;
     border-right: 1px solid #ddd; /* 添加右边框 */
   }
   
   .info-container {
-    width: 25%; /* 信息容器占25% */
+    width: 20%; /* 信息容器占25% */
     display: flex;
     flex-direction: column;
     background: #ffffff; /* 背景色 */
@@ -35,11 +35,16 @@
   .chat-body {
     flex: 1;
     padding: 15px;
-    overflow-y: auto;
+    overflow-y: scroll; /* 允许滚动 */
+    scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
+    -ms-overflow-style: none; /* 隐藏 Internet Explorer 和 Edge 的滚动条 */
     border-radius: 5px; /* 圆角 */
     background: #f1f1f1; /* 聊天内容背景色 */
   }
   
+  .chat-body::-webkit-scrollbar {
+    display: none; /* 隐藏 Chrome, Safari 和 Opera 的滚动条 */
+  }
 
   .typing-indicator {
     font-style: italic;
@@ -108,6 +113,7 @@
   
   .bot-message {
     justify-content: flex-start; /* AI消息靠左 */
+    margin-top: 20px;;
   }
   
   .bot-content {
@@ -134,3 +140,26 @@
     border-radius: 50%; /* 圆形头像 */
     margin-left: 10px; /* 头像和消息内容之间的间距 */
   }
+
+  .floating-buttons {
+    position: fixed;
+    bottom: 120px;
+    left: 75%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 1000;
+  }
+  
+  .floating-button {
+    background-color: white; /* 可以根据需要调整颜色 */
+    color: #0e100d;
+    border: none;
+    transition: background 0.3s;
+  }
+  
+  .floating-button:hover {
+    background-color: #357abd; /* 鼠标悬停时的背景色 */
+  }
+  
