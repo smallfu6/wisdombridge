@@ -1,4 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
+import ReactMarkdown from "react-markdown";
+import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
+import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism"; // 使用 oneDark 主题样式
 import "../styles/ChatBot.css"; // 导入 CSS 文件
 
 const ChatBot = () => {
@@ -62,6 +65,15 @@ const ChatBot = () => {
     };
   }, [parseStreamChunk]);
 
+  // 停止接收AI消息的功能
+  const handleStopAI = () => {
+    if (wsRef.current) {
+      wsRef.current.close();
+      setIsTyping(false); // 停止后关闭 typing 状态
+      console.log("Stopped receiving AI messages.");
+    }
+  };
+
   const handleSendMessage = () => {
     if (input.trim()) {
       // 发送用户消息
@@ -88,6 +100,27 @@ const ChatBot = () => {
     chatBodyRef.current?.scrollTo({ top: chatBodyRef.current.scrollHeight, behavior: "smooth" });
   }, [messages]);
 
+  // 使用 components 属性来渲染代码块
+  const components = {
+    code({ node, inline, className, children, ...props }) {
+      const match = /language-(\w+)/.exec(className || "");
+      return !inline && match ? (
+        <SyntaxHighlighter
+          style={oneDark}
+          language={match[1]}
+          PreTag="div"
+          {...props}
+        >
+          {String(children).replace(/\n$/, "")}
+        </SyntaxHighlighter>
+      ) : (
+        <code className={className} {...props}>
+          {children}
+        </code>
+      );
+    },
+  };
+
   return (
     <div className="chat-container">
       <div className="chat-body" ref={chatBodyRef}>
@@ -98,7 +131,11 @@ const ChatBot = () => {
               msg.role === "user" ? "user-message" : "bot-message"
             }`}
           >
-            {msg.content}
+            {msg.role === "assistant" ? (
+              <ReactMarkdown components={components}>{msg.content}</ReactMarkdown> // 使用 components 来渲染 AI 消息
+            ) : (
+              msg.content // 用户消息直接显示
+            )}
           </div>
         ))}
 
@@ -112,8 +149,11 @@ const ChatBot = () => {
           value={input}
           onChange={(e) => setInput(e.target.value)}
           onKeyDown={handleKeyDown}
+          disabled={isTyping} // 禁用输入框当 AI 在回复时
         />
-        <button onClick={handleSendMessage}>Send</button>
+        <button onClick={isTyping ? handleStopAI : handleSendMessage}>
+          <i className={`fas ${isTyping ? "fa-stop" : "fa-paper-plane"}`}></i> {/* 图标切换 */}
+        </button>
       </div>
     </div>
   );

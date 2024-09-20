@@ -14,9 +14,10 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-const apiUrl = "https://llamatool.us.gaianet.network/v1/chat/completions"
+// const apiUrl = "https://llamatool.us.gaianet.network/v1/chat/completions"
+const apiUrl = "https://gemma.us.gaianet.network/v1/chat/completions"
 const apiKey = ""
-const modelName = "llama"
+const modelName = "gemma"
 
 type ChatReq struct {
 	Role    string `json:"role"`
