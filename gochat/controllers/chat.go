@@ -20,7 +20,7 @@ const apiKey = ""
 
 const modelName = "gemma"
 
-const prefixContent = "请扮演爱因斯坦并且和我进行对话，请用中文回答\n"
+const prefixContent = ""
 
 // const modelName = "llama"
 

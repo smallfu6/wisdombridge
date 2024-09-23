@@ -114,13 +114,14 @@
   .bot-message {
     justify-content: flex-start; /* AI消息靠左 */
     margin-top: 20px;;
+    max-width: 80%;
   }
   
   .bot-content {
     background-color: #baeca3; /* AI消息背景色 */
     color: black; /* AI消息文字颜色 */
     padding-left: 10px;
-    padding-right: 10px;
+    padding-right: 30px;
     border-radius: 15px; /* 消息边框圆角 */
     max-width: 70%; /* 消息最大宽度 */
     border-top-left-radius: 0; /* 左上角圆角 */
