@@ -2,9 +2,16 @@ package models
 
 // 定义 API 请求体结构
 type ChatRequest struct {
-	Messages []Message `json:"messages"`
-	Model    string    `json:"model"`
-	Stream   bool      `json:"stream"`
+	Messages    []Message `json:"messages"`
+	Model       string    `json:"model"`
+	Stream      bool      `json:"stream"`
+	TopP        float64   `json:"top_p"`       // 0-1
+	Temperature float64   `json:"temperature"` // 0-2
+}
+
+func (c *ChatRequest) Setup() {
+	c.TopP = 1
+	c.Temperature = 1.6
 }
 
 // 定义消息结构

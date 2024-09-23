@@ -30,7 +30,6 @@ func ReadStreamData(resp *http.Response, conn *websocket.Conn) {
 				return
 			}
 			// c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to read stream"})
-			log.Fatalln("sdsf", err)
 			return
 		}
 

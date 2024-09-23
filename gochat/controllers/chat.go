@@ -17,7 +17,12 @@ import (
 // const apiUrl = "https://llamatool.us.gaianet.network/v1/chat/completions"
 const apiUrl = "https://gemma.us.gaianet.network/v1/chat/completions"
 const apiKey = ""
+
 const modelName = "gemma"
+
+const prefixContent = "请扮演爱因斯坦并且和我进行对话，请用中文回答\n"
+
+// const modelName = "llama"
 
 type ChatReq struct {
 	Role    string `json:"role"`
@@ -78,20 +83,22 @@ func ReadMessage(conn *websocket.Conn) error {
 		}
 
 		// 设置请求消息
+		// TODO: config
 		chatRequest := models.ChatRequest{
 			Messages: []models.Message{
 				{Role: "system", Content: "You are a helpful assistant."},
-				{Role: "user", Content: cr.Content},
+				{Role: "user", Content: prefixContent + cr.Content},
 			},
 			Model:  modelName,
 			Stream: true,
 		}
+		chatRequest.Setup()
 
 		// 发送 POST 请求
 		resp, err := utils.SendPostRequest(apiUrl, apiKey, chatRequest)
 		if err != nil {
 			// c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-			log.Fatalln(err)
+			log.Println(err)
 			return err
 		}
 
