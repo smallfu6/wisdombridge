@@ -6,40 +6,26 @@
     background-color: #f8f9fa; /* 背景色 */
   }
   
-  .options-panel {
-    width: 10%; /* 左侧选项占20% */
-    background: #ffffff; /* 背景色 */
-    padding: 20px;
-    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
-    border-right: 1px solid #ddd; /* 添加右边框 */
-  }
   
   .chat-container {
-    width: 70%; /* 右侧聊天框占55% */
     display: flex;
     flex-direction: column;
-    background: #ffffff; /* 背景色 */
-    padding: 10px;
-    border-right: 1px solid #ddd; /* 添加右边框 */
-  }
-  
-  .info-container {
-    width: 20%; /* 信息容器占25% */
-    display: flex;
-    flex-direction: column;
-    background: #ffffff; /* 背景色 */
-    padding: 20px;
-    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1); /* 添加阴影效果 */
+    align-items: center; /* 中间对齐 */
+    justify-content: flex-start; /* 垂直方向从顶部开始 */
+    width: 90%; /* 可以根据需要设置 */
+    padding: 20px; /* 内边距 */
   }
   
   .chat-body {
-    flex: 1;
-    padding: 15px;
-    overflow-y: scroll; /* 允许滚动 */
-    scrollbar-width: none; /* 隐藏 Firefox 的滚动条 */
-    -ms-overflow-style: none; /* 隐藏 Internet Explorer 和 Edge 的滚动条 */
-    border-radius: 5px; /* 圆角 */
-    background: #f1f1f1; /* 聊天内容背景色 */
+    width: 60%; /* 设置宽度 */
+    height: 100%;
+    margin-top: 40px;
+    /* max-height: 400px; 可以设置最大高度 */
+    overflow-y: auto; /* 超出内容时滚动 */
+    /* border: 1px solid #ccc; 边框样式 */
+    border-radius: 8px; /* 圆角边框 */
+    /* padding: 10px; 内边距 */
+    /* background-color: #e3e1e1;  背景颜色 */
   }
   
   .chat-body::-webkit-scrollbar {
@@ -53,7 +39,9 @@
   
   .chat-footer {
     display: flex;
-    border-top: 1px solid #ddd;
+    width: 60%; /* 设置宽度 */
+    margin-bottom: 40px;
+    /* border-top: 1px solid #ddd; */
     padding: 10px;
     background: #ffffff; /* 背景色 */
   }
@@ -99,6 +87,7 @@
 
   .user-message {
     justify-content: flex-end; /* 用户消息靠右 */
+    margin-top: 20px;
   }
   
   .user-content {
@@ -138,13 +127,13 @@
   .user-avatar {
     width: 40px; /* 设置头像宽度 */
     height: 40px; /* 设置头像高度 */
-    border-radius: 50%; /* 圆形头像 */
+    border-radius: 50%; /* 圆形头像 */  
     margin-left: 10px; /* 头像和消息内容之间的间距 */
   }
 
   .floating-buttons {
     position: fixed;
-    bottom: 120px;
+    bottom: 150px;
     left: 75%;
     transform: translateX(-50%);
     display: flex;

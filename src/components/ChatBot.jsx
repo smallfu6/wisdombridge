@@ -2,20 +2,59 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 
 import { Button } from "antd";
-import { CopyOutlined, SendOutlined, StopOutlined } from "@ant-design/icons";
+import { CopyOutlined, UpOutlined, StopOutlined } from "@ant-design/icons";
 import { DeleteOutlined, ArrowDownOutlined } from "@ant-design/icons";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism"; // 使用 oneDark 主题样式
+
+import RoleOption, {AIAvatar, EinsteinAvatar, ConfuciusAvatar, MonroeAvatar, UserAvatar} from "./RoleOption";
 import "../styles/ChatBot.css"; // 导入 CSS 文件
 
-const userAvatar = "/chat/user.png"; // 用户头像路径
-const botAvatar = "/chat/bot.png"; // AI头像路径
+const EinsteinPrompt  = "Please pretend to be Einstein and talk to me, "
+const MonroePrompt  = "Please pretend to be Marilyn Monroe and talk to me, "
+const ConfuciusPrompt  = "Please pretend to be Confucius and talk to me, "
+const AIPrompt  = "You are a helpful assistant, "
+
 
 const ChatBot = () => {
+  const [role, setRole] = useState(() => {
+    // 从 localStorage 读取消息
+    const saveRole = localStorage.getItem("role");
+    if (saveRole === null) {
+      localStorage.setItem("role", "ai");
+    }
+    return saveRole ? saveRole: "ai";
+  });
+
   const [messages, setMessages] = useState(() => {
     // 从 localStorage 读取消息
-    const savedMessages = localStorage.getItem("chatMessages");
+    const key = role + "-chatMessages"
+    const savedMessages = localStorage.getItem(key);
     return savedMessages ? JSON.parse(savedMessages) : [];
+  });
+
+  const [botAvatar, setBotAvatar] = useState(() => {
+    if (role === "einstein") {
+      return EinsteinAvatar
+    } else if (role === "confucius") {
+      return ConfuciusAvatar
+    } else if (role === "monroe") {
+      return MonroeAvatar
+    } else {
+      return AIAvatar
+    }
+  }); 
+
+  const [prefix, setPrefix] = useState(() => {
+    if (role === "einstein") {
+      return EinsteinPrompt
+    } else if (role === "confucius") {
+      return ConfuciusPrompt
+    } else if (role === "monroe") {
+      return MonroePrompt
+    } else {
+      return AIPrompt
+    }
   });
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -23,9 +62,10 @@ const ChatBot = () => {
   const chatBodyRef = useRef(null); // 用于滚动到最新消息
   const [hasReceivedMessage, setHasReceivedMessage] = useState(false);
 
-  const saveMessagesToStorage = (newMessages) => {
-    localStorage.setItem("chatMessages", JSON.stringify(newMessages));
-  };
+  const saveMessagesToStorage = useCallback((newMessages) => {
+    const key = role + "-chatMessages"
+    localStorage.setItem(key, JSON.stringify(newMessages));
+  }, [role]);
 
   const parseStreamChunk = useCallback((data) => {
     try {
@@ -58,7 +98,7 @@ const ChatBot = () => {
     } catch (error) {
       console.error("Error parsing stream chunk:", error);
     }
-  }, []);
+  }, [saveMessagesToStorage]);
 
   useEffect(() => {
     wsRef.current = new WebSocket("ws://127.0.0.1:8080/chat");
@@ -106,7 +146,7 @@ const ChatBot = () => {
       setIsTyping(true);
       setHasReceivedMessage(false);
 
-      wsRef.current.send(JSON.stringify({ role: "user", content: input }));
+      wsRef.current.send(JSON.stringify({ role: "user", content: prefix + input }));
     }
   };
 
@@ -182,16 +222,31 @@ const ChatBot = () => {
     },
   };
 
+
+  const handleSwitchRole = (path, role) => {
+    setBotAvatar(path);
+    setRole(role);
+    localStorage.setItem("role", role);
+
+    const key = role + "-chatMessages"
+    const savedMessages = localStorage.getItem(key);
+    setMessages(savedMessages ? JSON.parse(savedMessages) : []);
+
+    if (role === "einstein") {
+      setPrefix(EinsteinPrompt);
+    } else if (role === "confucius") {
+      setPrefix(ConfuciusPrompt);
+    } else if (role === "monroe") {
+      setPrefix(MonroePrompt);
+    } else {
+      setPrefix(AIPrompt);
+    }
+
+  }
+
   return (
     <div className="app-container">
-      <div className="options-panel">
-        <h2>选项</h2>
-        <ul>
-          <li>选项 1</li>
-          <li>选项 2</li>
-          <li>选项 3</li>
-        </ul>
-      </div>
+      <RoleOption onAvatarClick={handleSwitchRole} />
       <div className="chat-container">
         <div className="chat-body" ref={chatBodyRef}>
           {messages.map((msg, index) => (
@@ -223,7 +278,7 @@ const ChatBot = () => {
                 )}
               </div>
               {msg.role === "user" && (
-                <img src={userAvatar} alt="Avatar" className="user-avatar" />
+                <img src={UserAvatar} alt="Avatar" className="user-avatar" />
               )}
             </div>
           ))}
@@ -246,21 +301,15 @@ const ChatBot = () => {
             onKeyDown={handleKeyDown}
             disabled={isTyping}
           />
-          {/* <button onClick={isTyping ? handleStopAI : handleSendMessage}>
-            <i className={`fas ${isTyping ? "fa-stop" : "fa-paper-plane"}`}></i>
-          </button> */}
+
           <Button
-            icon={isTyping ? <StopOutlined /> : <SendOutlined />}
+            icon={isTyping ? <StopOutlined /> : <UpOutlined />}
             onClick={isTyping ? handleStopAI : handleSendMessage}
             type="primary" // 可以根据需要调整按钮类型
           />
         </div>
       </div>
-      <div className="info-container">
-        <p>info</p>
-      </div>
-
-      {/* 悬浮按钮 */}
+    
       <div className="floating-buttons">
         <Button
           className="floating-button"
