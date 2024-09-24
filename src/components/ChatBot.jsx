@@ -15,12 +15,20 @@ import RoleOption, {
   MonroeAvatar,
   UserAvatar,
 } from "./RoleOption";
-import "../styles/ChatBot.css"; // 导入 CSS 文件
 
-const EinsteinPrompt = "Please pretend to be Einstein and talk to me, ";
-const MonroePrompt = "Please pretend to be Marilyn Monroe and talk to me, ";
-const ConfuciusPrompt = "Please pretend to be Confucius and talk to me, ";
-const AIPrompt = "You are a helpful assistant, ";
+import {
+  EinsteinPrompt,
+  ConfuciusPrompt,
+  MonroePrompt,
+  AIPrompt,
+  EinsteinInfo,
+  ConfuciusInfo,
+  MonroeInfo,
+  AIInfo,
+} from "./Info";
+
+import "../styles/ChatBot.css";
+import "../styles/RoleOption.css";
 
 const ChatBot = () => {
   const [socketUrl, setSocketUrl] = useState("ws://127.0.0.1:8080/chat");
@@ -66,10 +74,17 @@ const ChatBot = () => {
     // 从 localStorage 读取消息
     const key = role + "-chatMessages";
     const savedMessages = localStorage.getItem(key);
-    return savedMessages ? JSON.parse(savedMessages) : [];
+    const messagesArray = savedMessages ? JSON.parse(savedMessages) : [];
+    if (role === "ai"){
+      if(!savedMessages){
+        const message = JSON.stringify({ role: "assistant", content: AIInfo });
+        if (messagesArray.length === 0) {
+          messagesArray.push(JSON.parse(message));
+        }
+      }
+    };
+    return messagesArray;
   });
-
-  
 
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
@@ -138,6 +153,7 @@ const ChatBot = () => {
 
   const handleStopAI = () => {
     handleReconnect();
+    setIsTyping(false);
   };
 
   const handleSendMessage = () => {
@@ -220,7 +236,7 @@ const ChatBot = () => {
   };
 
   const handleSwitchRole = (path, role) => {
-    // TODO: message id 
+    // TODO: message id
     handleReconnect();
 
     setIsTyping(false);
@@ -228,9 +244,27 @@ const ChatBot = () => {
     setRole(role);
     localStorage.setItem("role", role);
 
+    let info = "";
+    if (role === "einstein") {
+      info = EinsteinInfo;
+    } else if (role === "confucius") {
+      info = ConfuciusInfo;
+    } else if (role === "monroe") {
+      info = MonroeInfo;
+    } else {
+      info = AIInfo;
+    }
+
     const key = role + "-chatMessages";
     const savedMessages = localStorage.getItem(key);
-    setMessages(savedMessages ? JSON.parse(savedMessages) : []);
+    const message = JSON.stringify({ role: "assistant", content: info });
+
+    const messagesArray = savedMessages ? JSON.parse(savedMessages) : [];
+    if (messagesArray.length === 0) {
+      messagesArray.push(JSON.parse(message));
+    }
+    // TODO: storage record
+    setMessages(messagesArray);
 
     if (role === "einstein") {
       setPrefix(EinsteinPrompt);
@@ -245,11 +279,6 @@ const ChatBot = () => {
     // 刷新页面
     // TODO: send STOP message
     // window.location.reload();
-    if (savedMessages === null) {
-      sendMessage(
-        JSON.stringify({ role: "user", content: prefix + "who are you?" })
-      );
-    }
   };
 
   return (
