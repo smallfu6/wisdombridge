@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
+import useWebSocket from "react-use-websocket";
 
 import { Button } from "antd";
 import { CopyOutlined, UpOutlined, StopOutlined } from "@ant-design/icons";
@@ -7,133 +8,136 @@ import { DeleteOutlined, ArrowDownOutlined } from "@ant-design/icons";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { oneDark } from "react-syntax-highlighter/dist/esm/styles/prism"; // 使用 oneDark 主题样式
 
-import RoleOption, {AIAvatar, EinsteinAvatar, ConfuciusAvatar, MonroeAvatar, UserAvatar} from "./RoleOption";
+import RoleOption, {
+  AIAvatar,
+  EinsteinAvatar,
+  ConfuciusAvatar,
+  MonroeAvatar,
+  UserAvatar,
+} from "./RoleOption";
 import "../styles/ChatBot.css"; // 导入 CSS 文件
 
-const EinsteinPrompt  = "Please pretend to be Einstein and talk to me, "
-const MonroePrompt  = "Please pretend to be Marilyn Monroe and talk to me, "
-const ConfuciusPrompt  = "Please pretend to be Confucius and talk to me, "
-const AIPrompt  = "You are a helpful assistant, "
-
+const EinsteinPrompt = "Please pretend to be Einstein and talk to me, ";
+const MonroePrompt = "Please pretend to be Marilyn Monroe and talk to me, ";
+const ConfuciusPrompt = "Please pretend to be Confucius and talk to me, ";
+const AIPrompt = "You are a helpful assistant, ";
 
 const ChatBot = () => {
+  const [socketUrl, setSocketUrl] = useState("ws://127.0.0.1:8080/chat");
+  // 创建 WebSocket 实例
+  const { sendMessage, lastMessage, readyState, getWebSocket } = useWebSocket(
+    socketUrl,
+    {
+      shouldReconnect: (closeEvent) => true, // 启用自动重连
+    }
+  );
+
   const [role, setRole] = useState(() => {
     // 从 localStorage 读取消息
     const saveRole = localStorage.getItem("role");
-    if (saveRole === null) {
-      localStorage.setItem("role", "ai");
-    }
-    return saveRole ? saveRole: "ai";
-  });
-
-  const [messages, setMessages] = useState(() => {
-    // 从 localStorage 读取消息
-    const key = role + "-chatMessages"
-    const savedMessages = localStorage.getItem(key);
-    return savedMessages ? JSON.parse(savedMessages) : [];
+    return saveRole ? saveRole : "ai";
   });
 
   const [botAvatar, setBotAvatar] = useState(() => {
     if (role === "einstein") {
-      return EinsteinAvatar
+      return EinsteinAvatar;
     } else if (role === "confucius") {
-      return ConfuciusAvatar
+      return ConfuciusAvatar;
     } else if (role === "monroe") {
-      return MonroeAvatar
+      return MonroeAvatar;
     } else {
-      return AIAvatar
+      return AIAvatar;
     }
-  }); 
+  });
 
   const [prefix, setPrefix] = useState(() => {
     if (role === "einstein") {
-      return EinsteinPrompt
+      return EinsteinPrompt;
     } else if (role === "confucius") {
-      return ConfuciusPrompt
+      return ConfuciusPrompt;
     } else if (role === "monroe") {
-      return MonroePrompt
+      return MonroePrompt;
     } else {
-      return AIPrompt
+      return AIPrompt;
     }
   });
+
+  const [messages, setMessages] = useState(() => {
+    // 从 localStorage 读取消息
+    const key = role + "-chatMessages";
+    const savedMessages = localStorage.getItem(key);
+    return savedMessages ? JSON.parse(savedMessages) : [];
+  });
+
+  
+
   const [input, setInput] = useState("");
   const [isTyping, setIsTyping] = useState(false);
-  const wsRef = useRef(null); // WebSocket 引用
   const chatBodyRef = useRef(null); // 用于滚动到最新消息
   const [hasReceivedMessage, setHasReceivedMessage] = useState(false);
 
-  const saveMessagesToStorage = useCallback((newMessages) => {
-    const key = role + "-chatMessages"
-    localStorage.setItem(key, JSON.stringify(newMessages));
-  }, [role]);
-
-  const parseStreamChunk = useCallback((data) => {
-    try {
-      if (data === "DONE") {
-        setIsTyping(false);
-        setHasReceivedMessage(false);
-      } else {
-        const message = JSON.parse(data);
-        const content = message.content;
-
-        setMessages((prevMessages) => {
-          const lastMessage = prevMessages[prevMessages.length - 1];
-          let updatedMessages;
-          if (lastMessage && lastMessage.role === "assistant") {
-            updatedMessages = [
-              ...prevMessages.slice(0, prevMessages.length - 1),
-              { ...lastMessage, content: lastMessage.content + content },
-            ];
-          } else {
-            setHasReceivedMessage(true); // 收到消息时设置为 true
-            updatedMessages = [
-              ...prevMessages,
-              { role: "assistant", content: content },
-            ];
-          }
-          saveMessagesToStorage(updatedMessages);
-          return updatedMessages;
-        });
-      }
-    } catch (error) {
-      console.error("Error parsing stream chunk:", error);
+  const handleReconnect = () => {
+    const socket = getWebSocket();
+    if (socket) {
+      socket.close(); // 主动断开连接
     }
-  }, [saveMessagesToStorage]);
+    // 重新设置 URL 并重新连接
+    setSocketUrl(socketUrl);
+  };
+
+  const saveMessagesToStorage = useCallback(
+    (newMessages) => {
+      const key = role + "-chatMessages";
+      localStorage.setItem(key, JSON.stringify(newMessages));
+    },
+    [role]
+  );
+
+  const parseStreamChunk = useCallback(
+    (data) => {
+      try {
+        if (data === "DONE") {
+          setIsTyping(false);
+          setHasReceivedMessage(false);
+        } else {
+          const message = JSON.parse(data);
+          const content = message.content;
+
+          setMessages((prevMessages) => {
+            const lastMessage = prevMessages[prevMessages.length - 1];
+            let updatedMessages;
+            if (lastMessage && lastMessage.role === "assistant") {
+              updatedMessages = [
+                ...prevMessages.slice(0, prevMessages.length - 1),
+                { ...lastMessage, content: lastMessage.content + content },
+              ];
+            } else {
+              setHasReceivedMessage(true); // 收到消息时设置为 true
+              updatedMessages = [
+                ...prevMessages,
+                { role: "assistant", content: content },
+              ];
+            }
+            saveMessagesToStorage(updatedMessages);
+            return updatedMessages;
+          });
+        }
+      } catch (error) {
+        console.error("Error parsing stream chunk:", error);
+      }
+    },
+    [saveMessagesToStorage]
+  );
 
   useEffect(() => {
-    wsRef.current = new WebSocket("ws://127.0.0.1:8080/chat");
-
-    wsRef.current.onopen = () => {
-      console.log("WebSocket connection opened");
-    };
-
-    wsRef.current.onmessage = (event) => {
-      const data = event.data;
-      parseStreamChunk(data);
-    };
-
-    wsRef.current.onclose = () => {
-      console.log("WebSocket connection closed");
-    };
-
-    wsRef.current.onerror = (error) => {
-      console.error("WebSocket error:", error);
-    };
-
-    return () => {
-      wsRef.current.close();
-    };
-  }, [parseStreamChunk]);
+    if (lastMessage !== null) {
+      // console.log(`Received message: ${lastMessage.data}`);
+      parseStreamChunk(lastMessage.data);
+    }
+  }, [parseStreamChunk, lastMessage]);
 
   const handleStopAI = () => {
-    if (wsRef.current) {
-      wsRef.current.close();
-      setIsTyping(false);
-      console.log("Stopped receiving AI messages.");
-      // 刷新页面
-      // TODO: send STOP message
-      window.location.reload();
-    }
+    handleReconnect();
   };
 
   const handleSendMessage = () => {
@@ -146,7 +150,7 @@ const ChatBot = () => {
       setIsTyping(true);
       setHasReceivedMessage(false);
 
-      wsRef.current.send(JSON.stringify({ role: "user", content: prefix + input }));
+      sendMessage(JSON.stringify({ role: "user", content: prefix + input }));
     }
   };
 
@@ -164,19 +168,12 @@ const ChatBot = () => {
   }, [messages]);
 
   const handleClearMessages = () => {
-    if (wsRef.current) {
-      wsRef.current.close(); // 停止接收消息
-      setIsTyping(false); // 停止输入指示
-    }
+    handleReconnect();
     setMessages([]); // 清空消息记录
     setInput(""); // 清空输入框
     console.log("清空记录并停止接收消息.");
 
     localStorage.removeItem("chatMessages"); // 清除 localStorage 中的消息
-
-    // 刷新页面
-    // TODO: send STOP message
-    window.location.reload();
   };
 
   const handleScrollToBottom = () => {
@@ -222,13 +219,16 @@ const ChatBot = () => {
     },
   };
 
-
   const handleSwitchRole = (path, role) => {
+    // TODO: message id 
+    handleReconnect();
+
+    setIsTyping(false);
     setBotAvatar(path);
     setRole(role);
     localStorage.setItem("role", role);
 
-    const key = role + "-chatMessages"
+    const key = role + "-chatMessages";
     const savedMessages = localStorage.getItem(key);
     setMessages(savedMessages ? JSON.parse(savedMessages) : []);
 
@@ -242,7 +242,15 @@ const ChatBot = () => {
       setPrefix(AIPrompt);
     }
 
-  }
+    // 刷新页面
+    // TODO: send STOP message
+    // window.location.reload();
+    if (savedMessages === null) {
+      sendMessage(
+        JSON.stringify({ role: "user", content: prefix + "who are you?" })
+      );
+    }
+  };
 
   return (
     <div className="app-container">
@@ -260,7 +268,7 @@ const ChatBot = () => {
                 alignItems: "flex-start", // 头像与消息内容对齐
                 marginBottom: "10px", // 消息间距
               }}
-            >   
+            >
               {msg.role === "assistant" && (
                 <img src={botAvatar} alt="Avatar" className="bot-avatar" />
               )}
@@ -309,7 +317,7 @@ const ChatBot = () => {
           />
         </div>
       </div>
-    
+
       <div className="floating-buttons">
         <Button
           className="floating-button"

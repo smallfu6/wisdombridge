@@ -1,6 +1,7 @@
 .option-container {
     width: 10%; /* 可以根据需要设置 */
     background-color: antiquewhite; 
+    padding: 20px;
   }
   
   .option-avatars {
