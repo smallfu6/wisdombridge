@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import ReactMarkdown from "react-markdown";
 import useWebSocket from "react-use-websocket";
 
-import { Button } from "antd";
+import { Button, Tooltip } from "antd";
 import { CopyOutlined, UpOutlined, StopOutlined } from "@ant-design/icons";
 import { DeleteOutlined, ArrowDownOutlined } from "@ant-design/icons";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
@@ -43,7 +43,9 @@ const ChatBot = () => {
   const [role, setRole] = useState(() => {
     // 从 localStorage 读取消息
     const saveRole = localStorage.getItem("role");
-    return saveRole ? saveRole : "ai";
+    const role = saveRole ? saveRole : "ai";
+    localStorage.setItem("role", role);
+    return role;
   });
 
   const [botAvatar, setBotAvatar] = useState(() => {
@@ -75,14 +77,15 @@ const ChatBot = () => {
     const key = role + "-chatMessages";
     const savedMessages = localStorage.getItem(key);
     const messagesArray = savedMessages ? JSON.parse(savedMessages) : [];
-    if (role === "ai"){
-      if(!savedMessages){
+    if (role === "ai") {
+      if (!savedMessages) {
         const message = JSON.stringify({ role: "assistant", content: AIInfo });
         if (messagesArray.length === 0) {
           messagesArray.push(JSON.parse(message));
+          localStorage.setItem(key, JSON.stringify(messagesArray));
         }
       }
-    };
+    }
     return messagesArray;
   });
 
@@ -90,6 +93,7 @@ const ChatBot = () => {
   const [isTyping, setIsTyping] = useState(false);
   const chatBodyRef = useRef(null); // 用于滚动到最新消息
   const [hasReceivedMessage, setHasReceivedMessage] = useState(false);
+  const [isScrolledToBottom, setIsScrolledToBottom] = useState(true);
 
   const handleReconnect = () => {
     const socket = getWebSocket();
@@ -192,6 +196,22 @@ const ChatBot = () => {
     localStorage.removeItem("chatMessages"); // 清除 localStorage 中的消息
   };
 
+  // 监听滚动事件
+  const handleScroll = () => {
+    const { scrollTop, scrollHeight, clientHeight } = chatBodyRef.current;
+    const isBottom = scrollTop + clientHeight >= scrollHeight - 10; // 偏差容忍度
+    setIsScrolledToBottom(isBottom);
+  };
+
+  useEffect(() => {
+    const chatBody = chatBodyRef.current;
+    chatBody?.addEventListener("scroll", handleScroll);
+
+    return () => {
+      chatBody?.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   const handleScrollToBottom = () => {
     chatBodyRef.current?.scrollTo({
       top: chatBodyRef.current.scrollHeight,
@@ -256,14 +276,15 @@ const ChatBot = () => {
     }
 
     const key = role + "-chatMessages";
+    console.log("key", key);
     const savedMessages = localStorage.getItem(key);
     const message = JSON.stringify({ role: "assistant", content: info });
 
     const messagesArray = savedMessages ? JSON.parse(savedMessages) : [];
     if (messagesArray.length === 0) {
       messagesArray.push(JSON.parse(message));
+      localStorage.setItem(key, JSON.stringify(messagesArray));
     }
-    // TODO: storage record
     setMessages(messagesArray);
 
     if (role === "einstein") {
@@ -348,18 +369,27 @@ const ChatBot = () => {
       </div>
 
       <div className="floating-buttons">
-        <Button
-          className="floating-button"
-          icon={<DeleteOutlined />}
-          onClick={handleClearMessages}
-          shape="circle"
-        />
-        <Button
-          className="floating-button"
-          icon={<ArrowDownOutlined />}
-          onClick={handleScrollToBottom}
-          shape="circle"
-        />
+        {messages && messages.length !== 0 && (
+          <Tooltip title="Clear Messages">
+            <Button
+              className="floating-button"
+              icon={<DeleteOutlined />}
+              onClick={handleClearMessages}
+              shape="circle"
+            />
+          </Tooltip>
+        )}
+
+        {isScrolledToBottom || (
+          <Tooltip title="Scroll to Bottom">
+            <Button
+              className="floating-button"
+              icon={<ArrowDownOutlined />}
+              onClick={handleScrollToBottom}
+              shape="circle"
+            />
+          </Tooltip>
+        )}
       </div>
     </div>
   );
