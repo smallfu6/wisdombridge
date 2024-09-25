@@ -6,6 +6,8 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
+    "@thirdweb-dev/react": "^4.9.4",
+    "@thirdweb-dev/sdk": "^4.0.99",
     "antd": "^5.20.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
@@ -13,6 +15,7 @@
     "react-scripts": "5.0.1",
     "react-syntax-highlighter": "^15.5.0",
     "react-use-websocket": "^4.8.1",
+    "thirdweb": "^5.58.5",
     "web-vitals": "^2.1.4"
   },
   "scripts": {

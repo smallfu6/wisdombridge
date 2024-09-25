@@ -26,9 +26,10 @@ import {
   MonroeInfo,
   AIInfo,
 } from "./Info";
-
+import WalletInfo from "./WalletInfo";
 import "../styles/ChatBot.css";
 import "../styles/RoleOption.css";
+import "../styles/WalletInfo.css"
 
 const ChatBot = () => {
   const [socketUrl, setSocketUrl] = useState("ws://127.0.0.1:8080/chat");
@@ -386,6 +387,8 @@ const ChatBot = () => {
           />
         </div>
       </div>
+      <WalletInfo />
+
 
       <div className="floating-buttons">
         {messages && messages.length !== 1 && (

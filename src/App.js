@@ -1,10 +1,15 @@
 import React from 'react';
+import { ThirdwebProvider } from "thirdweb/react";
+
 import ChatBot from './components/ChatBot';
+
 
 function App() {
   return (
     <div className="App">
-      <ChatBot />
+      <ThirdwebProvider>
+        <ChatBot />
+      </ThirdwebProvider>
     </div>
   );
 }
