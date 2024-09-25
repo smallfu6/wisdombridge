@@ -65,7 +65,7 @@ go mod tidy
 go run main.go
 ```
 
-6. Start the frontend application in a new terminal;
+6. Start the frontend application in a new terminal:
 
 ```bash
 cd gaiachat
