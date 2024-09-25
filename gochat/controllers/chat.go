@@ -47,8 +47,7 @@ func StreamChat(c *gin.Context) {
 		err := ReadMessage(conn)
 		if err != nil {
 			log.Println("Error while reading message:", err)
-			continue
-			// break // 发生错误时退出循环
+			break // 发生错误时退出循环
 		}
 
 		// err = conn.WriteMessage(messageType, msg)

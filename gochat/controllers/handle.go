@@ -21,6 +21,9 @@ func ReadStreamData(resp *http.Response, conn *websocket.Conn) {
 	// 逐行读取返回的流式数据
 	reader := bufio.NewReader(resp.Body)
 	for {
+		if conn == nil {
+			return
+		}
 		line, err := reader.ReadBytes('\n')
 		if err != nil {
 			// 如果结束，返回 DONE
