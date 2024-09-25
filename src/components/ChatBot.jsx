@@ -114,6 +114,11 @@ const ChatBot = () => {
 
   const parseStreamChunk = useCallback(
     (data) => {
+      const socket = getWebSocket();
+      socket.addEventListener("close", (event) => {
+        return;
+      });
+
       try {
         if (data === "DONE") {
           setIsTyping(false);
@@ -145,15 +150,19 @@ const ChatBot = () => {
         console.error("Error parsing stream chunk:", error);
       }
     },
-    [saveMessagesToStorage]
+    [saveMessagesToStorage, getWebSocket]
   );
 
   useEffect(() => {
+    if (readyState === WebSocket.CLOSED) {
+      console.log("The connection has been closed.");
+      return;
+    }
     if (lastMessage !== null) {
       // console.log(`Received message: ${lastMessage.data}`);
       parseStreamChunk(lastMessage.data);
     }
-  }, [parseStreamChunk, lastMessage]);
+  }, [parseStreamChunk, lastMessage, readyState]);
 
   const handleStopAI = () => {
     handleReconnect();
@@ -191,9 +200,29 @@ const ChatBot = () => {
     handleReconnect();
     setMessages([]); // 清空消息记录
     setInput(""); // 清空输入框
+    setIsTyping(false); 
     console.log("清空记录并停止接收消息.");
 
-    localStorage.removeItem("chatMessages"); // 清除 localStorage 中的消息
+    const key = role + "-chatMessages";
+    localStorage.removeItem(key); // 清除 localStorage 中的消息
+
+    let info = "";
+    if (role === "einstein") {
+      info = EinsteinInfo;
+    } else if (role === "confucius") {
+      info = ConfuciusInfo;
+    } else if (role === "monroe") {
+      info = MonroeInfo;
+    } else {
+      info = AIInfo;
+    }
+
+    const message = JSON.stringify({ role: "assistant", content: info });
+
+    const messagesArray = [];
+    messagesArray.push(JSON.parse(message));
+    localStorage.setItem(key, JSON.stringify(messagesArray));
+    setMessages(messagesArray);
   };
 
   // 监听滚动事件
@@ -256,23 +285,27 @@ const ChatBot = () => {
   };
 
   const handleSwitchRole = (path, role) => {
-    // TODO: message id
+    localStorage.setItem("role", role);
+    setRole(role);
     handleReconnect();
 
     setIsTyping(false);
     setBotAvatar(path);
-    setRole(role);
-    localStorage.setItem("role", role);
+    // TODO: message id
 
     let info = "";
     if (role === "einstein") {
       info = EinsteinInfo;
+      setPrefix(EinsteinPrompt);
     } else if (role === "confucius") {
       info = ConfuciusInfo;
+      setPrefix(ConfuciusPrompt);
     } else if (role === "monroe") {
       info = MonroeInfo;
+      setPrefix(MonroePrompt);
     } else {
       info = AIInfo;
+      setPrefix(AIPrompt);
     }
 
     const key = role + "-chatMessages";
@@ -286,20 +319,6 @@ const ChatBot = () => {
       localStorage.setItem(key, JSON.stringify(messagesArray));
     }
     setMessages(messagesArray);
-
-    if (role === "einstein") {
-      setPrefix(EinsteinPrompt);
-    } else if (role === "confucius") {
-      setPrefix(ConfuciusPrompt);
-    } else if (role === "monroe") {
-      setPrefix(MonroePrompt);
-    } else {
-      setPrefix(AIPrompt);
-    }
-
-    // 刷新页面
-    // TODO: send STOP message
-    // window.location.reload();
   };
 
   return (
@@ -369,7 +388,7 @@ const ChatBot = () => {
       </div>
 
       <div className="floating-buttons">
-        {messages && messages.length !== 0 && (
+        {messages && messages.length !== 1 && (
           <Tooltip title="Clear Messages">
             <Button
               className="floating-button"
