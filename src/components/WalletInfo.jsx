@@ -1,5 +1,5 @@
 import { ConnectButton, useActiveAccount, useActiveWalletConnectionStatus } from "thirdweb/react";
-import { linea } from "thirdweb/chains";
+import { mainnet } from "thirdweb/chains";
 import { createWallet } from "thirdweb/wallets";
 
 import client from "../client.js"
@@ -22,7 +22,7 @@ const WalletInfo = () => {
     <div className="wallet-container">
       <ConnectButton
         client={client}
-        chain={linea}
+        chain={mainnet}
         wallets={wallets}
         connectModal={{ size: "compact" }}
       />
