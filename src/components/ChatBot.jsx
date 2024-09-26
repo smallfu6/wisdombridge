@@ -26,6 +26,7 @@ import {
   MonroeInfo,
   AIInfo,
 } from "./Info";
+import Home from "./Home";
 import WalletInfo from "./WalletInfo";
 import "../styles/ChatBot.css";
 import "../styles/RoleOption.css";
@@ -324,6 +325,7 @@ const ChatBot = () => {
 
   return (
     <div className="app-container">
+      <Home />
       <RoleOption onAvatarClick={handleSwitchRole} />
       <div className="chat-container">
         <div className="chat-body" ref={chatBodyRef}>
