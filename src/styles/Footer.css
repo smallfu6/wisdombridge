@@ -1,0 +1,25 @@
+.footer {
+    display: flex;
+    justify-content: center; /* 居中对齐*/
+    align-items: center;
+    padding: 20px;
+    /* background-color: #333; 背景颜色 */
+    color: rgb(0, 0, 0); /* 字体颜色 */
+  }
+  
+  .github-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgb(232, 229, 225); /* 图标背景颜色 */
+    border-radius: 50%; /* 圆形背景 */
+    color: black; /* 图标颜色 */
+    margin-right: 10px; /* 图标与文字间距 */
+    font-size: 25px; 
+  }
+
+
+  
+  .power-info {
+    margin: 0; /* 去掉默认间距 */
+  }

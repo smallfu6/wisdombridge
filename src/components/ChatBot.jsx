@@ -26,6 +26,7 @@ import {
   MonroeInfo,
   AIInfo,
 } from "./Info";
+import Home from "./Home";
 import WalletInfo from "./WalletInfo";
 import "../styles/ChatBot.css";
 import "../styles/RoleOption.css";
@@ -229,7 +230,7 @@ const ChatBot = () => {
   // 监听滚动事件
   const handleScroll = () => {
     const { scrollTop, scrollHeight, clientHeight } = chatBodyRef.current;
-    const isBottom = scrollTop + clientHeight >= scrollHeight - 10; // 偏差容忍度
+    const isBottom = scrollTop + clientHeight >= scrollHeight - 100; // 偏差容忍度
     setIsScrolledToBottom(isBottom);
   };
 
@@ -324,6 +325,7 @@ const ChatBot = () => {
 
   return (
     <div className="app-container">
+      <Home />
       <RoleOption onAvatarClick={handleSwitchRole} />
       <div className="chat-container">
         <div className="chat-body" ref={chatBodyRef}>

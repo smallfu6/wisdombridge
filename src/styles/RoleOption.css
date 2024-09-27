@@ -1,16 +1,24 @@
 .option-container {
-  width: 10%;
+  width: 15%;
   /* 可以根据需要设置 */
   background-color: rgb(232, 229, 225);
-  padding: 20px;
   transition: background-color 0.3s ease; 
+  display: flex;
+  flex-direction: column; /* 垂直排列 */
+  min-height: 100vh; /* 确保容器至少占满整个视口高度 */
+}
+
+.logo-strip {
+  width: 100%;
 }
 
 .option-avatars {
+  flex: 1; 
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  justify-content: center;
+  /* justify-content: center; */
 }
 
 .avatar-container {

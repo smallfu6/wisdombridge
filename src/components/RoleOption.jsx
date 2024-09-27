@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+
+import Footer from "./Footer";
 import "../styles/RoleOption.css";
 
 export const AIAvatar = "/chat/bot.png";
@@ -9,6 +11,7 @@ export const UserAvatar = "/chat/user.png";
 
 const RoleOption = ({ onAvatarClick }) => {
   const [selectedRole, setSelectedRole] = useState(null);
+  const logoStrip = "/icon-strip.png";
 
   const handleAvatarClick = (path, role) => {
     setSelectedRole(role); // 设置选中的角色
@@ -21,7 +24,7 @@ const RoleOption = ({ onAvatarClick }) => {
 
   return (
     <div className="option-container">
-      <h2>Select a Role</h2>
+      <img className="logo-strip" src={logoStrip} alt="Logo" />
       <div className="option-avatars">
         <div
           className={`avatar-container ${
@@ -60,6 +63,7 @@ const RoleOption = ({ onAvatarClick }) => {
           <span className="avatar-title">Marilyn Monroe</span>
         </div>
       </div>
+      <Footer /> 
     </div>
   );
 };
