@@ -230,7 +230,7 @@ const ChatBot = () => {
   // 监听滚动事件
   const handleScroll = () => {
     const { scrollTop, scrollHeight, clientHeight } = chatBodyRef.current;
-    const isBottom = scrollTop + clientHeight >= scrollHeight - 10; // 偏差容忍度
+    const isBottom = scrollTop + clientHeight >= scrollHeight - 100; // 偏差容忍度
     setIsScrolledToBottom(isBottom);
   };
 
