@@ -12,7 +12,7 @@
     flex-direction: column;
     align-items: center; /* 中间对齐 */
     justify-content: flex-start; /* 垂直方向从顶部开始 */
-    width: 80%; /* 可以根据需要设置 */
+    width: 75%; /* 可以根据需要设置 */
     padding: 20px; /* 内边距 */
   }
   

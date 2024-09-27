@@ -1,32 +1,64 @@
-.overlay {
+  .overlay {
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(27, 26, 26, 0.5); /* 半透明黑色背景 */
-    z-index: 999; /* 确保在所有内容之上 */
+    background-color: rgba(0, 0, 0, 0.5); /* 可选的遮罩层 */
   }
   
   .home {
-    position: fixed;
-    top: 20%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-color: rgba(255, 255, 255, 0.9);
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
-    z-index: 1000; /* 确保在阴影之上 */
-    transition: opacity 1s ease;
+    position: absolute; /* 使其脱离正常文档流 */
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: black; /* 背景色 */
+    z-index: 10; /* 确保在其他组件之上 */
+    display: flex; /* 使用 flexbox 布局 */
+    flex-direction: column;
+    justify-content: flex-start; /* 从顶部开始排列 */
+    align-items: flex-start; /* 靠左对齐 */
   }
   
+  .logo {
+    margin-left: 400px;
+    margin-top: 180px;
+  }
+  
+  .project-name {
+    font-size: 6rem; /* 超大字体 */
+    color: aliceblue;
+    margin-left: 400px;
+    margin-top: inherit;
+    margin-bottom: inherit;
+  }
+  
+  .project-detail {
+    font-size: 2rem; /* 超大字体 */
+    color: aliceblue;
+    margin-left: 400px;
+    width: 60%; /* 占80%的区域 */
+  }
+
+  .color-bar {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%; /* 占80%的区域 */
+    height: 10px; /* 彩条高度 */
+    background: linear-gradient(90deg, orange,  blue, red,  indigo, yellow, green, violet); /* 彩色条 */
+    border-radius: 5px; /* 添加圆角 */
+  }
+  
+
   .fade-in {
     opacity: 1;
+    transition: opacity 2s ease-in; /* 过渡效果 */
   }
   
   .fade-out {
     opacity: 0;
-    pointer-events: none; /* 避免点击事件干扰 */
+    transition: opacity 2s ease-out; /* 过渡效果 */
   }
-  
